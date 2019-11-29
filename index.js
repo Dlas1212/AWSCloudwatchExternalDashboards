@@ -46,8 +46,9 @@ async function getMetricsFromDashboard(DashboardName) {
     var metricsArr = []
 
     widgets.forEach(elem => {
-        var { properties: { metrics } } = elem
-        metricsArr.push(metrics)
+        // console.log(elem)
+        var { properties: { metrics, view } } = elem
+        metricsArr.push({metrics, view})
     })
     
     return metricsArr
@@ -60,13 +61,15 @@ app.get('/aws', async  (req, res) => {
 
     rimraf('./public/images/*', function () { console.log('done'); });
 
-    metrics.forEach( (metric, index) => {
+    metrics.forEach( (data, index) => {
 
+        var { metrics, view } = data
+        
         var value =
             {
-                "view": "timeSeries",
+                "view": view,
                 "stacked": false,
-                "metrics": metric,
+                "metrics": metrics,
                 "region": "ca-central-1"
             }
 
