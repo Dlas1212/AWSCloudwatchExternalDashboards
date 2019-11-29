@@ -37,7 +37,7 @@ async function getDashboard(DashboardName) {
 async function getMetricsFromDashboard(DashboardName) {
     if (!DashboardName) { throw new Error('No Dashboard Name')}
 
-    const data = await getDashboard('Master')
+    const data = await getDashboard(DashboardName)
 
     let dataBody = JSON.parse(data.DashboardBody)
     const { widgets } = dataBody
