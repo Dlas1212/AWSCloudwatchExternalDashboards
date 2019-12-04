@@ -15,7 +15,7 @@ function updateView() {
 
 var socket = io.connect('http://localhost:5000')
 
-setInterval(updateView, 10000);
+setInterval(updateView, 30000);
 
 
 // Listen for Events 
