@@ -1,12 +1,19 @@
 require('dotenv').config()
+const axios = require('axios');
 var AWS = require('aws-sdk'); 
 const fs = require('fs');
 
+const path = require('path');
 const express = require('express')
 const app = express()
 const rimraf = require('rimraf');
 
 var exphbs  = require('express-handlebars');
+
+// var expressWs = require('express-ws')(app);
+
+var socket = require('socket.io')
+
 
 const AWSAuthMiddleware = require('./src/middleware/AWSAuthMiddleware')
 
@@ -16,10 +23,47 @@ app.use(express.static('public'))
 
 app.use(AWSAuthMiddleware)
 
-app.get('/', (req, res) => res.send('Hello World!'))
+var server = app.listen(process.env.SERVER_PORT, () => console.log(`App listening on port ${process.env.SERVER_PORT}!`))
 
+// Socket Setup
+var io = socket(server)
 
 var cloudwatch = new AWS.CloudWatch();
+
+const directoryPath = path.join(__dirname, 'public/images/');
+
+
+io.on('connection', function(socket) {
+    console.log('connected web socket', socket.id)
+
+
+    socket.on('updateAWS', async (data) => {
+        console.log('updating aws index')
+
+          await axios.get('http://localhost:5000/aws').then(function (response) {
+            console.log(response)
+          }).catch(err => {
+              console.log(err.message)
+          })
+
+
+       var images = []
+        fs.readdirSync(directoryPath).forEach(file => {
+            images.push(file)
+        })
+
+        io.sockets.emit('updateAWS', images)
+
+  
+
+      
+    })
+
+
+})
+
+
+app.get('/', (req, res) => res.send('Hello World!'))
 
 
 async function getDashboard(DashboardName) {
@@ -93,7 +137,8 @@ app.get('/aws', async  (req, res) => {
         });
     })
 
-    res.status(200).send('done')
+    res.status(200)
+    // res.status(200).send('done')
 
 })
 
@@ -101,42 +146,6 @@ app.get('/display', (req, res) => {
     res.render('aws', {layout: false})
 })
 
-app.listen(process.env.SERVER_PORT, () => console.log(`App listening on port ${process.env.SERVER_PORT}!`))
 
 
 
-
-
-
-// console.log(data)
-
-// var cloudwatch = new AWS.CloudWatch();
-
-// var params = {
-//     MetricWidget: JSON.stringify({
-//         "view": "timeSeries",
-//         "stacked": false,
-//         "metrics": [
-//             [ "System/Linux", "DiskSpaceUsed", "MountPath", "/", "InstanceId", "i-0734d906f711ec41d", "Filesystem", "/dev/nvme0n1p1" ]
-//         ],
-//         "region": "ca-central-1"
-//     }),
-//     OutputFormat: 'png'
-// }
-
-
-// cloudwatch.getMetricWidgetImage(params, function (err, data) {
-//   if (err) console.log(err, err.stack); // an error occurred
-//   else  {
-//     const { MetricWidgetImage} = data
-
-//     fs.writeFile("img1.png", MetricWidgetImage);
-
-//     res.send('done')
-
-//     // res.send(MetricWidgetImage)
-//     console.log(MetricWidgetImage)
-
-
-//   }          
-// });
