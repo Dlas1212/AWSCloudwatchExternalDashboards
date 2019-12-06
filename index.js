@@ -148,4 +148,26 @@ app.get('/display', (req, res) => {
 
 
 
+app.get('/metricdata', (req, res) => {
+
+
+    var params = {
+        EndTime: new Date,
+        MetricDataQueries: [
+            {
+                
+            }
+        ],
+        StartTime: new Date,
+    }
+    
+    cloudwatch.getMetricData(params).then(data => {
+        console.log('success')
+        console.log(data)
+    }).catch(error => {
+        console.log(error.stack)
+    })
+
+})
+
 
