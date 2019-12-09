@@ -7,7 +7,7 @@ Make sure you have your AWS IAM Permissions set correctly.
 2. `npm install`
 3. `npm run dev`
 
-In Index.js specify your Dashboard Name. In this case it is `*Master*`.
+In Index.js specify your Dashboard Name. In this case it is `Master`.
 
 Navigate to `/aws` to generate the Cloudwatch images
 
