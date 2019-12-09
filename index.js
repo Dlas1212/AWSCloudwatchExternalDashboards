@@ -32,6 +32,9 @@ var cloudwatch = new AWS.CloudWatch();
 
 const directoryPath = path.join(__dirname, 'public/images/');
 
+// ----------------------------- DASHBOARD NAME ----------------------------- //
+var db_name = 'Master'
+// ----------------------------- DASHBOARD NAME ----------------------------- //
 
 io.on('connection', function(socket) {
     console.log('connected web socket', socket.id)
@@ -101,7 +104,7 @@ async function getMetricsFromDashboard(DashboardName) {
 
 app.get('/aws', async  (req, res) => {
 
-    const metrics = await getMetricsFromDashboard('Master')
+    const metrics = await getMetricsFromDashboard(db_name)
 
     rimraf('./public/images/*', function () { console.log('done'); });
 
